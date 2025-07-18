@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { db } from "./firebase";
 
 const USE_MOCK_DATA = false;
@@ -8,8 +8,8 @@ export const dataService = {
   async getBooksCatalog() {
     const snapshot = await getDocs(collection(db, "books"));
     return snapshot.docs.map((doc) => ({
-      id: doc.id,  // Firebase document ID
-      ...doc.data(),  // bookId, title, author
+      id: doc.id,
+      ...doc.data(),
     }));
   },
 
@@ -22,7 +22,7 @@ export const dataService = {
     const snapshot = await getDocs(collection(db, "book_loans"));
     return snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),  // bookId, studentId, status, dueDate
+      ...doc.data(),
     }));
   },
 
@@ -47,9 +47,21 @@ export const dataService = {
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
 
-  async addStudent(studentData: any) {
-    return await addDoc(collection(db, "students"), studentData);
+  async addStudent(studentData: { id: string; name: string; email: string; status: string }) {
+    const studentRef = doc(db, "students", studentData.id);  // El carnet como ID real del documento
+    await setDoc(studentRef, studentData);
   },
+
+  async updateStudent(studentId: string, updatedData: { name: string; email: string; status: string }) {
+    const studentRef = doc(db, "students", studentId);
+    await updateDoc(studentRef, updatedData);
+  },
+
+  async deleteStudent(studentId: string) {
+    const studentRef = doc(db, "students", studentId);
+    await deleteDoc(studentRef);
+  },
+
 
   // 🏫 STUDY ROOMS
   async getStudyRooms() {

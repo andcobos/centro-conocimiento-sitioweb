@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -36,7 +37,7 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full shadow-lg">
+    <Card className=" shadow-lg">
       <CardHeader className="space-y-1 text-center">
         <div className="flex justify-center mb-4">
           <BookOpen className="h-12 w-12 text-blue-600" />
@@ -44,6 +45,7 @@ export function LoginForm() {
         <CardTitle className="text-2xl font-bold">Access Portal</CardTitle>
         <CardDescription>Sign in to access the Knowledge Center services</CardDescription>
       </CardHeader>
+
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -97,6 +99,12 @@ export function LoginForm() {
           <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
             Sign In
           </Button>
+
+          <Link href="/" className="block">
+            <Button variant="outline" className="w-full mt-2">
+              ← Back
+            </Button>
+          </Link>
         </form>
 
         <Alert className="mt-4">
