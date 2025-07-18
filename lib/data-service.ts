@@ -64,16 +64,67 @@ export const dataService = {
 
 
   // 🏫 STUDY ROOMS
-  async getStudyRooms() {
-    const snapshot = await getDocs(collection(db, "study_rooms"));
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  async requestStudyRoom(roomId: string, studentId: string) {
+    const roomRef = doc(db, "study_rooms", roomId);
+    await updateDoc(roomRef, {
+      status: "Pending",
+      requestedBy: studentId,
+      requestedAt: new Date().toISOString(),
+    });
   },
 
-  async updateRoomStatus(roomId: string, status: string, occupiedBy?: string) {
+  async addStudyRoom(roomData: { name: string; status: string; occupiedBy: string | null; occupiedUntil: string | null }) {
+    return await addDoc(collection(db, "study_rooms"), roomData)
+  },
+
+  async getStudyRooms() {
+    const snapshot = await getDocs(collection(db, "study_rooms"))
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),  
+    }))
+  },
+
+  async getStudentRoomRequest(studentId: string) {
+    const snapshot = await getDocs(query(
+      collection(db, "study_rooms"),
+      where("requestedBy", "==", studentId)
+    ))
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
+  }, 
+  async approveStudyRoomRequest(roomId: string, studentId: string, occupiedUntil: string) {
+    const roomRef = doc(db, "study_rooms", roomId)
+    await updateDoc(roomRef, {
+      status: "Occupied",
+      occupiedBy: studentId,      // Aquí asignas automáticamente el requestedBy como encargado
+      requestedBy: null,          // Limpias la solicitud
+      occupiedUntil: occupiedUntil,
+    })
+  },
+
+  async setOccupiedUntil(roomId: string, occupiedUntil: string) {
+    const roomRef = doc(db, "study_rooms", roomId)
+    await updateDoc(roomRef, { occupiedUntil })
+  },
+
+  async rejectStudyRoomRequest(roomId: string) {
+    const roomRef = doc(db, "study_rooms", roomId);
+    await updateDoc(roomRef, {
+      status: "Available",
+      requestedBy: null,
+      requestedAt: null,
+    });
+  },
+
+  async updateRoomStatus(roomId: string, status: string, occupiedBy?: string, occupiedUntil?: string) {
     const roomRef = doc(db, "study_rooms", roomId);
     await updateDoc(roomRef, {
       status,
       occupiedBy: occupiedBy || null,
+      occupiedUntil: occupiedUntil || null,
     });
   },
 
@@ -99,4 +150,29 @@ export const dataService = {
     const snapshot = await getDocs(collection(db, "activity_logs"));
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
+
+  // 📚 BOOK BORROWING (For Students)
+  async getBorrowedBooks(studentId: string) {
+    const snapshot = await getDocs(query(
+      collection(db, "book_loans"),
+      where("studentId", "==", studentId),
+      where("status", "==", "Active")
+    ))
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),  // title, dueDate, status
+    }))
+  },
+
+  async getLoanHistory(studentId: string) {
+    const snapshot = await getDocs(query(
+      collection(db, "book_loans"),
+      where("studentId", "==", studentId)
+    ))
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),  // title, borrowDate, returnDate
+    }))
+  },
+
 };

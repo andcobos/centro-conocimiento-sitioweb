@@ -26,12 +26,12 @@ export function AdminDashboard() {
             <div className="flex items-center">
               <BookOpen className="h-8 w-8 text-blue-600 mr-3" />
               <h1 className="text-xl font-semibold text-gray-900">
-                Knowledge Center - Admin
+                Centro de Conocimiento ESEN - ADMIN
               </h1>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
-                Welcome, Administrator
+                Welcome, ADMIN
               </span>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />

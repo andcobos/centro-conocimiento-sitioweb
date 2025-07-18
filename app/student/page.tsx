@@ -1,4 +1,4 @@
-import { StudentDashboard } from "@/components/student-dashboard"
+import { StudentDashboard } from "@/app/student/student-dashboard"
 
 export default function StudentPage() {
   return <StudentDashboard />
