@@ -11,18 +11,17 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertTriangle } from "lucide-react"
 import { dataService } from "@/lib/data-service"
 
-
-useEffect(() => {
-  const loadStudentRequest = async () => {
-    const requests = await dataService.getStudentRoomRequest("12345")  // Usa su ID real
-    setStudentRequest(requests[0])  // Si solo puede tener una solicitud activa
-  }
-  loadStudentRequest()
-}, [])
-
 export function StudyRoomSection({ studyRooms, onRequest }: { studyRooms: any[], onRequest: (ids: string) => void }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [requestStudentIds, setRequestStudentIds] = useState("")
+  
+  useEffect(() => {
+    const loadStudentRequest = async () => {
+      const requests = await dataService.getStudentRoomRequest("12345"); // Usa su ID real
+      setStudentRequest(requests[0]); // Si solo puede tener una solicitud activa
+    };
+    loadStudentRequest();
+  }, []);
 
   const handleRequest = () => {
     onRequest(requestStudentIds)

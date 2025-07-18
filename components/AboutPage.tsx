@@ -28,7 +28,7 @@ export function AboutPage() {
       </nav>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+      <div className="bg-gradient-to-r from-blue-800 to-indigo-700 text-white animate-fade-in-up">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-4xl font-bold mb-4">
@@ -74,7 +74,7 @@ export function AboutPage() {
           </div>
           <div className="flex justify-center">
             <img
-              src="/placeholder.svg?height=400&width=500"
+              src="/esencampus.jpg?height=400&width=500"
               alt="Knowledge Center Interior"
               className="rounded-lg shadow-lg"
             />
@@ -87,7 +87,7 @@ export function AboutPage() {
             Our Services
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="text-center">
+            <Card className="text-center transition-transform transform hover:scale-105 hover:shadow-xl duration-300 ease-in-out">
               <CardHeader>
                 <BookOpen className="h-12 w-12 text-blue-600 mx-auto mb-4" />
                 <CardTitle>Library Resources</CardTitle>

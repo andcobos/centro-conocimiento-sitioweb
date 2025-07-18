@@ -48,10 +48,10 @@ export const dataService = {
   },
 
   async addStudent(studentData: { id: string; name: string; email: string; status: string }) {
-    const studentRef = doc(db, "students", studentData.id);  // El carnet como ID real del documento
-    await setDoc(studentRef, studentData);
+    const studentRef = doc(db, "students", studentData.id)  // Carnet como ID real del documento
+    await setDoc(studentRef, studentData)
   },
-
+  
   async updateStudent(studentId: string, updatedData: { name: string; email: string; status: string }) {
     const studentRef = doc(db, "students", studentId);
     await updateDoc(studentRef, updatedData);
