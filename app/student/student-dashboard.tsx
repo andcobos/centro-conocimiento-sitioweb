@@ -8,6 +8,7 @@ import { dataService } from "@/lib/data-service"
 import { StudyRoomSection } from "./StudyRooms"
 import { BooksSection } from "./BooksSection"
 import { FinesSection } from "./FinesSection"
+import Image from "next/image"
 
 type StudyRoom = {
   id: string
@@ -107,9 +108,17 @@ export function StudentDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <BookOpen className="h-8 w-8 text-blue-600 mr-3" />
-              <h1 className="text-xl font-semibold text-gray-900">Knowledge Center</h1>
-            </div>
+                          <Image
+                            src="/esenlogo.png"
+                            alt="ESEN Logo"
+                            width={32}
+                            height={32}
+                            className="mr-3 rounded"
+                          />
+                          <h1 className="text-xl font-semibold text-gray-900">
+                            Centro de Conocimiento ESEN - STUDENT
+                          </h1>
+                        </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">Welcome, Student</span>
               <Button variant="ghost" size="sm" onClick={handleLogout}>

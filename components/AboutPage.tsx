@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { BookOpen, Clock, Users, Wifi, Coffee, Phone, Mail, MapPin } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
+
 
 export function AboutPage() {
   return (
@@ -13,7 +15,13 @@ export function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <BookOpen className="h-8 w-8 text-blue-600 mr-3" />
+              <Image
+                src="/esenlogo.png"
+                alt="ESEN Logo"
+                width={32}
+                height={32}
+                className="mr-3 rounded"
+              />
               <h1 className="text-xl font-semibold text-gray-900">
                 Centro de Conocimiento ESEN
               </h1>
@@ -48,9 +56,7 @@ export function AboutPage() {
         {/* About Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">
-              About CC
-            </h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">About CC</h2>
             <div className="space-y-4 text-gray-600">
               <p>
                 The University Knowledge Center serves as the heart of academic

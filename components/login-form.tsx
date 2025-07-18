@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertCircle, BookOpen } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import Image from "next/image"
+
 
 export function LoginForm() {
   const { login } = useAuth()
@@ -37,13 +39,21 @@ export function LoginForm() {
   }
 
   return (
-    <Card className=" shadow-lg">
+    <Card className="max-w-50  shadow-lg">
       <CardHeader className="space-y-1 text-center">
         <div className="flex justify-center mb-4">
-          <BookOpen className="h-12 w-12 text-blue-600" />
+          <Image
+            src="/esenlogo.png"
+            alt="ESEN Logo"
+            width={60}
+            height={60}
+            className="rounded"
+          />
         </div>
         <CardTitle className="text-2xl font-bold">Access Portal</CardTitle>
-        <CardDescription>Sign in to access the Knowledge Center services</CardDescription>
+        <CardDescription>
+          Sign in to access the Centro de Conocimiento ESEN services
+        </CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -68,7 +78,9 @@ export function LoginForm() {
             <Input
               id="userId"
               type="text"
-              placeholder={role === "admin" ? "Enter Admin ID" : "Enter your student ID"}
+              placeholder={
+                role === "admin" ? "Enter Admin ID" : "Enter your student ID"
+              }
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
               required
@@ -96,7 +108,10 @@ export function LoginForm() {
             </Alert>
           )}
 
-          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+          <Button
+            type="submit"
+            className="w-full bg-blue-800 hover:bg-blue-700"
+          >
             Sign In
           </Button>
 
@@ -110,11 +125,12 @@ export function LoginForm() {
         <Alert className="mt-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Access to the Knowledge Center is restricted to registered students and authorized personnel only. Contact
-            the library administration if you need assistance.
+            Access to the Centro de Conocimiento ESEN is restricted to
+            registered students and authorized personnel only. Contact the
+            library administration if you need assistance.
           </AlertDescription>
         </Alert>
       </CardContent>
     </Card>
-  )
+  );
 }
