@@ -27,10 +27,9 @@ export default function LibraryCatalog() {
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <h2 className="text-2xl font-bold text-gray-900">Library Catalog</h2>
 
-      {/* Campo de búsqueda */}
       <Input
         placeholder="Search books by title or author..."
         value={searchTerm}
@@ -40,7 +39,6 @@ export default function LibraryCatalog() {
 
       <Card>
         <CardContent className="pt-6">
-
           <AddBookForm onBookAdded={loadBooks} />
 
           <Table className="mt-4">
@@ -61,7 +59,6 @@ export default function LibraryCatalog() {
               ))}
             </TableBody>
           </Table>
-
         </CardContent>
       </Card>
     </div>

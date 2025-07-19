@@ -53,10 +53,10 @@ export function AdminDashboard() {
           <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="students">Students</TabsTrigger>
             <TabsTrigger value="rooms">Study Rooms</TabsTrigger>
-            <TabsTrigger value="fines">Fines</TabsTrigger>
-            <TabsTrigger value="logs">Activity Logs</TabsTrigger>
             <TabsTrigger value="library">Library</TabsTrigger>
             <TabsTrigger value="loans">Book Loans</TabsTrigger>
+            <TabsTrigger value="fines">Fines</TabsTrigger>
+            <TabsTrigger value="logs">Activity Logs</TabsTrigger>
           </TabsList>
 
           {/* pantallas específicas */}
@@ -68,6 +68,14 @@ export function AdminDashboard() {
             <StudyRooms />
           </TabsContent>
 
+          <TabsContent value="library">
+            <LibraryCatalog />
+          </TabsContent>
+
+          <TabsContent value="loans">
+            <BookLoans />
+          </TabsContent>
+
           <TabsContent value="fines">
             <Fines />
           </TabsContent>
@@ -76,13 +84,7 @@ export function AdminDashboard() {
             <ActivityLogs />
           </TabsContent>
 
-          <TabsContent value="library">
-            <LibraryCatalog />
-          </TabsContent>
-
-          <TabsContent value="loans">
-            <BookLoans />
-          </TabsContent>
+          
         </Tabs>
       </div>
     </div>

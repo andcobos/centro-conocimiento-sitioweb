@@ -3,14 +3,13 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BookOpen, LogOut } from "lucide-react"
+import { LogOut } from "lucide-react"
 import { dataService } from "@/lib/data-service"
 import { StudyRoomSection } from "./StudyRooms"
-import { BooksSection } from "./BooksSection"
 import { FinesSection } from "./FinesSection"
 import Image from "next/image"
-import { useAuth } from "@/contexts/auth-context";
-
+import { useAuth } from "@/contexts/auth-context"
+import StudentLibraryCatalog from "./LibraryCatalog"
 
 type StudyRoom = {
   id: string
@@ -43,20 +42,24 @@ type Fine = {
 }
 
 export function StudentDashboard() {
+  const { user } = useAuth()
+  const studentId = user?.id
+
   const [studyRooms, setStudyRooms] = useState<StudyRoom[]>([])
   const [borrowedBooks, setBorrowedBooks] = useState<BookLoan[]>([])
   const [fines, setFines] = useState<Fine[]>([])
   const [loanHistory, setLoanHistory] = useState<LoanHistory[]>([])
-  const { user } = useAuth();
 
   useEffect(() => {
+    if (!studentId) return
+
     const loadData = async () => {
       const [roomsRaw, booksRaw, finesRaw, historyRaw] = await Promise.all([
         dataService.getStudyRooms(),
-        dataService.getBorrowedBooks("12345"),
-        dataService.getFines("12345"),
-        dataService.getLoanHistory("12345"),
-      ]);
+        dataService.getBorrowedBooks(studentId),
+        dataService.getFines(studentId),
+        dataService.getLoanHistory(studentId),
+      ])
 
       const rooms = roomsRaw.map((room: any) => ({
         id: room.id,
@@ -64,16 +67,16 @@ export function StudentDashboard() {
         status: room.status ?? "Available",
         occupiedBy: room.occupiedBy ?? null,
         occupiedUntil: room.occupiedUntil ?? null,
-      }));
-      setStudyRooms(rooms);
+      }))
+      setStudyRooms(rooms)
 
       const books = booksRaw.map((book: any) => ({
         id: book.id,
         title: book.title ?? "Untitled",
         dueDate: book.dueDate ?? null,
         status: book.status ?? "Unknown",
-      }));
-      setBorrowedBooks(books);
+      }))
+      setBorrowedBooks(books)
 
       const fines = finesRaw.map((fine: any) => ({
         id: fine.id,
@@ -81,21 +84,20 @@ export function StudentDashboard() {
         amount: fine.amount ?? "0",
         status: fine.status ?? "Not Paid",
         date: fine.date ?? "",
-      }));
-      setFines(fines);
+      }))
+      setFines(fines)
 
       const history = historyRaw.map((entry: any) => ({
         id: entry.id,
         title: entry.title ?? "Untitled",
         borrowDate: entry.borrowDate ?? "",
         returnDate: entry.returnDate ?? "",
-      }));
-      setLoanHistory(history);
-    };
+      }))
+      setLoanHistory(history)
+    }
 
-    loadData();
-  }, []);
-
+    loadData()
+  }, [studentId])
 
   const handleRoomRequest = (ids: string) => {
     console.log("Request study room for:", ids)
@@ -103,6 +105,14 @@ export function StudentDashboard() {
 
   const handleLogout = () => {
     window.location.href = "/"
+  }
+
+  if (!studentId) {
+    return (
+      <div className="p-8 text-center text-red-500">
+        Student not authenticated. Please log in.
+      </div>
+    )
   }
 
   return (
@@ -123,9 +133,7 @@ export function StudentDashboard() {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Welcome, {user?.id}
-              </span>
+              <span className="text-sm text-gray-600">Welcome, {user?.id}</span>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -144,17 +152,12 @@ export function StudentDashboard() {
           </TabsList>
 
           <TabsContent value="rooms">
-            <StudyRoomSection
-              studyRooms={studyRooms}
-              onRequest={handleRoomRequest}
-            />
+            <StudyRoomSection studyRooms={studyRooms} />
           </TabsContent>
 
           <TabsContent value="books">
-            <BooksSection
-              borrowedBooks={borrowedBooks}
-              loanHistory={loanHistory}
-            />
+            {/* 📚 Catálogo de libros */}
+            <StudentLibraryCatalog />
           </TabsContent>
 
           <TabsContent value="fines">

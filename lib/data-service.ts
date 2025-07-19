@@ -3,7 +3,17 @@ import { db } from "./firebase";
 
 const USE_MOCK_DATA = false;
 
+export type BookLoan = {
+  id: string
+  bookId: string
+  studentId: string
+  status: string
+  dueDate?: string
+}
+
+
 export const dataService = {
+
   // 📚 LIBRARY (Books Catalog)
   async getBooksCatalog() {
     const snapshot = await getDocs(collection(db, "books"));
@@ -18,15 +28,23 @@ export const dataService = {
   },
 
   // 📖 BOOK LOANS
-  async getBookLoans() {
+  async getBookLoans(): Promise<BookLoan[]> {
     const snapshot = await getDocs(collection(db, "book_loans"));
     return snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    }));
+    })) as BookLoan[];
   },
 
-  async createBookLoan(loanData: { bookId: string; studentId: string; status: string; dueDate?: string }) {
+
+  async createBookLoan(loanData: {
+    bookId: string;
+    title: string;      // ✅ NUEVO
+    author: string;     // ✅ NUEVO
+    studentId: string;
+    status: string;
+    dueDate?: string;
+  }) {
     return await addDoc(collection(db, "book_loans"), loanData);
   },
 
@@ -38,6 +56,64 @@ export const dataService = {
   async setLoanDueDate(loanId: string, dueDate: string) {
     const loanRef = doc(db, "book_loans", loanId);
     await updateDoc(loanRef, { dueDate });
+  },
+
+  async getStudentBookRequests(studentId: string) {   // ✅ NUEVO
+    const snapshot = await getDocs(query(
+      collection(db, "book_loans"),
+      where("studentId", "==", studentId)
+    ));
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  },
+
+  async getBorrowedBooks(studentId: string) {
+    const snapshot = await getDocs(query(
+      collection(db, "book_loans"),
+      where("studentId", "==", studentId),
+      where("status", "==", "Active")
+    ))
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  },
+
+  async getLoanHistory(studentId: string) {
+    const snapshot = await getDocs(query(
+      collection(db, "book_loans"),
+      where("studentId", "==", studentId)
+    ))
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  },
+
+  async getPendingBookLoans() {
+    const snapshot = await getDocs(query(
+      collection(db, "book_loans"),
+      where("status", "==", "Pending")
+    ));
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  },
+
+  async approveBookLoanRequest(loanId: string, dueDate: string) {
+    const loanRef = doc(db, "book_loans", loanId);
+    await updateDoc(loanRef, {
+      dueDate: dueDate,
+      status: "On Time",
+    });
+  },
+
+  async updateBookLoanStatus(loanId: string, status: string) {
+    const loanRef = doc(db, "book_loans", loanId);
+    await updateDoc(loanRef, { status });
   },
 
   // 🎓 STUDENTS
@@ -164,30 +240,6 @@ export const dataService = {
   async getActivityLogs() {
     const snapshot = await getDocs(collection(db, "activity_logs"));
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  },
-
-  // 📚 BOOK BORROWING (For Students)
-  async getBorrowedBooks(studentId: string) {
-    const snapshot = await getDocs(query(
-      collection(db, "book_loans"),
-      where("studentId", "==", studentId),
-      where("status", "==", "Active")
-    ))
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),  // title, dueDate, status
-    }))
-  },
-
-  async getLoanHistory(studentId: string) {
-    const snapshot = await getDocs(query(
-      collection(db, "book_loans"),
-      where("studentId", "==", studentId)
-    ))
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),  // title, borrowDate, returnDate
-    }))
   },
 
 };
