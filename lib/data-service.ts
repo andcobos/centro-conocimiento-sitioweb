@@ -85,16 +85,31 @@ export const dataService = {
     }))
   },
 
+
   async getStudentRoomRequest(studentId: string) {
     const snapshot = await getDocs(query(
       collection(db, "study_rooms"),
       where("requestedBy", "==", studentId)
-    ))
-    return snapshot.docs.map((doc) => ({
+    ));
+
+    const pendingRequests = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    }))
-  }, 
+    }));
+
+    const occupiedSnapshot = await getDocs(query(
+      collection(db, "study_rooms"),
+      where("occupiedBy", "==", studentId)
+    ));
+
+    const occupiedRooms = occupiedSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return [...pendingRequests, ...occupiedRooms];
+  },
+
   async approveStudyRoomRequest(roomId: string, studentId: string, occupiedUntil: string) {
     const roomRef = doc(db, "study_rooms", roomId)
     await updateDoc(roomRef, {

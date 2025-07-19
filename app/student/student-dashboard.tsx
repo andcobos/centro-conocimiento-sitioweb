@@ -9,6 +9,8 @@ import { StudyRoomSection } from "./StudyRooms"
 import { BooksSection } from "./BooksSection"
 import { FinesSection } from "./FinesSection"
 import Image from "next/image"
+import { useAuth } from "@/contexts/auth-context";
+
 
 type StudyRoom = {
   id: string
@@ -45,6 +47,7 @@ export function StudentDashboard() {
   const [borrowedBooks, setBorrowedBooks] = useState<BookLoan[]>([])
   const [fines, setFines] = useState<Fine[]>([])
   const [loanHistory, setLoanHistory] = useState<LoanHistory[]>([])
+  const { user } = useAuth();
 
   useEffect(() => {
     const loadData = async () => {
@@ -108,19 +111,21 @@ export function StudentDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-                          <Image
-                            src="/esenlogo.png"
-                            alt="ESEN Logo"
-                            width={32}
-                            height={32}
-                            className="mr-3 rounded"
-                          />
-                          <h1 className="text-xl font-semibold text-gray-900">
-                            Centro de Conocimiento ESEN - STUDENT
-                          </h1>
-                        </div>
+              <Image
+                src="/esenlogo.png"
+                alt="ESEN Logo"
+                width={32}
+                height={32}
+                className="mr-3 rounded"
+              />
+              <h1 className="text-xl font-semibold text-gray-900">
+                Centro de Conocimiento ESEN - STUDENT
+              </h1>
+            </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">Welcome, Student</span>
+              <span className="text-sm text-gray-600">
+                Welcome, {user?.id}
+              </span>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -139,11 +144,17 @@ export function StudentDashboard() {
           </TabsList>
 
           <TabsContent value="rooms">
-            <StudyRoomSection studyRooms={studyRooms} onRequest={handleRoomRequest} />
+            <StudyRoomSection
+              studyRooms={studyRooms}
+              onRequest={handleRoomRequest}
+            />
           </TabsContent>
 
           <TabsContent value="books">
-            <BooksSection borrowedBooks={borrowedBooks} loanHistory={loanHistory} />
+            <BooksSection
+              borrowedBooks={borrowedBooks}
+              loanHistory={loanHistory}
+            />
           </TabsContent>
 
           <TabsContent value="fines">
@@ -152,5 +163,5 @@ export function StudentDashboard() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

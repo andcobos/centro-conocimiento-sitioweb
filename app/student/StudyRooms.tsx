@@ -1,36 +1,73 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, Clock, Users } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertTriangle } from "lucide-react"
-import { dataService } from "@/lib/data-service"
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MapPin, Clock, Users } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
+import { dataService } from "@/lib/data-service";
+import { useAuth } from "@/contexts/auth-context";
 
-export function StudyRoomSection({ studyRooms, onRequest }: { studyRooms: any[], onRequest: (ids: string) => void }) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [requestStudentIds, setRequestStudentIds] = useState("")
-  
+export function StudyRoomSection({ studyRooms }: { studyRooms: any[] }) {
+  const { user, loading } = useAuth();
+  const studentId = user?.id;
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [studentRequest, setStudentRequest] = useState<any>(null);
+
   useEffect(() => {
-    const loadStudentRequest = async () => {
-      const requests = await dataService.getStudentRoomRequest("12345"); // Usa su ID real
-      setStudentRequest(requests[0]); // Si solo puede tener una solicitud activa
-    };
+    if (!studentId) return;
     loadStudentRequest();
-  }, []);
+  }, [studentId]);
 
-  const handleRequest = () => {
-    onRequest(requestStudentIds)
-    setIsDialogOpen(false)
-    setRequestStudentIds("")
+  const loadStudentRequest = async () => {
+    if (!studentId) return;
+    const requests = await dataService.getStudentRoomRequest(studentId);
+    setStudentRequest(requests[0] || null);
+  };
+
+  const handleRequest = async () => {
+    if (!studentId) return;
+
+    const firstAvailableRoom = studyRooms.find(
+      (room) => room.status === "Available"
+    );
+
+    if (!firstAvailableRoom) {
+      alert("No available rooms at the moment.");
+      return;
+    }
+
+    await dataService.requestStudyRoom(firstAvailableRoom.id, studentId);
+    await loadStudentRequest();
+    setIsDialogOpen(false);
+  };
+
+  // ✅ IMPORTANTE: Controlar carga y autenticación correctamente
+  if (loading) {
+    return <p className="text-center py-4">Loading...</p>;
+  }
+
+  if (!studentId) {
+    return (
+      <p className="text-center py-4 text-red-500">
+        Student not authenticated. Please login.
+      </p>
+    );
   }
 
   return (
     <div className="space-y-6">
+      {/* Botón para solicitar sala */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Study Rooms</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -44,30 +81,43 @@ export function StudyRoomSection({ studyRooms, onRequest }: { studyRooms: any[],
             <DialogHeader>
               <DialogTitle>Request Study Room</DialogTitle>
               <DialogDescription>
-                Enter student IDs of participants.
+                You’ll be assigned the first available room.
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              <Label>Student IDs (comma-separated)</Label>
-              <Input
-                placeholder="e.g., 12345, 67890"
-                value={requestStudentIds}
-                onChange={(e) => setRequestStudentIds(e.target.value)}
-              />
-              <div className="flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleRequest}>Confirm</Button>
-              </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleRequest}>Confirm Request</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
+      {/* Estado actual de la solicitud */}
+      {studentRequest ? (
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            {studentRequest.status === "Pending"
+              ? `Your room request is pending approval for room ${
+                  studentRequest.roomName || studentRequest.id
+                }.`
+              : `You currently have assigned room ${
+                  studentRequest.roomName || studentRequest.id
+                }.`}
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            You have no active or assigned room.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Renderizado de las salas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {studyRooms.map((room) => (
           <Card key={room.id}>
@@ -102,17 +152,6 @@ export function StudyRoomSection({ studyRooms, onRequest }: { studyRooms: any[],
           </Card>
         ))}
       </div>
-
-      <Alert>
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>
-          You are currently in queue for a study room. Estimated wait: 15 mins.
-        </AlertDescription>
-      </Alert>
     </div>
   );
 }
-function setStudentRequest(arg0: any) {
-    throw new Error("Function not implemented.")
-}
-

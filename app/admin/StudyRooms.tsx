@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"  // Asegúrate de tener el componente Switch
+import { Switch } from "@/components/ui/switch"
 import { dataService } from "@/lib/data-service"
 import { Plus } from "lucide-react"
 
@@ -48,9 +48,9 @@ export default function StudyRooms() {
       room.id,
       room.requestedBy!,
       dueDate[room.id]
-    );
-    await loadRooms();
-  };
+    )
+    await loadRooms()
+  }
 
   const handleToggleStatus = async (room: StudyRoom) => {
     const newStatus = room.status === "Available" ? "Occupied" : "Available"
@@ -60,8 +60,6 @@ export default function StudyRooms() {
 
   const handleSetDueDate = async (roomId: string, date: string) => {
     setDueDate({ ...dueDate, [roomId]: date })
-    await dataService.setOccupiedUntil(roomId, date)
-    await loadRooms()
   }
 
   const handleAddRoom = async () => {
@@ -88,7 +86,41 @@ export default function StudyRooms() {
         </Button>
       </div>
 
-      {/* Rooms as Cards */}
+      {/* Pending Requests Section */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold">Pending Requests</h3>
+        {studyRooms.filter(room => room.requestedBy).length > 0 ? (
+          studyRooms.filter(room => room.requestedBy).map((room) => (
+            <Card key={room.id} className="border-yellow-500">
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center">
+                  {room.name}
+                  <Badge variant="outline">Pending</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <p><strong>Requested By:</strong> {room.requestedBy}</p>
+                <Input
+                  type="datetime-local"
+                  placeholder="Set end time"
+                  value={dueDate[room.id] || ""}
+                  onChange={(e) => handleSetDueDate(room.id, e.target.value)}
+                />
+                <Button
+                  onClick={() => handleApproveRequest(room)}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  Approve Request
+                </Button>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <p>No pending requests.</p>
+        )}
+      </div>
+
+      {/* All Rooms Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {studyRooms.map((room) => (
           <Card key={room.id} className="flex flex-col justify-between">
@@ -101,7 +133,6 @@ export default function StudyRooms() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Toggle */}
               <div className="flex justify-between items-center">
                 <span>{room.status === "Available" ? "Mark as Busy" : "Mark as Available"}</span>
                 <Switch
@@ -109,8 +140,6 @@ export default function StudyRooms() {
                   onCheckedChange={() => handleToggleStatus(room)}
                 />
               </div>
-
-              {/* Hour of Delivery */}
               <div>
                 <label className="text-sm font-semibold text-gray-700">Occupied Until:</label>
                 <Input
@@ -119,8 +148,6 @@ export default function StudyRooms() {
                   onChange={(e) => handleSetDueDate(room.id, e.target.value)}
                 />
               </div>
-
-              {/* Occupied By */}
               {room.occupiedBy && (
                 <p><strong>Occupied By:</strong> {room.occupiedBy}</p>
               )}
