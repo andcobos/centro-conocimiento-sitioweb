@@ -94,32 +94,45 @@ export default function StudentLibraryCatalog() {
         {filteredBooks.map((book) => {
           const existingRequest = activeRequests.find(
             (loan) => loan.bookId === book.bookId
-          )
+          );
 
           return (
             <Card key={book.id}>
               <CardHeader>
-                <CardTitle>{book.title}</CardTitle>
+                <div className="flex justify-center">
+                  {book.imageUrl && (
+                    <img
+                      src={book.imageUrl}
+                      alt={book.title}
+                      className="w-32 h-40 object-cover rounded"
+                    />
+                  )}
+                </div>
+                <CardTitle className="text-center mt-2">{book.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-gray-600">Author: {book.author}</p>
+                <p className="text-sm text-gray-600 text-center">
+                  Author: {book.author}
+                </p>
                 {existingRequest ? (
-                  <p className="text-green-600 font-bold mt-2">
+                  <p className="text-green-600 font-bold mt-2 text-center">
                     {existingRequest.status === "Pending"
                       ? "Request Pending"
                       : "Book Borrowed"}
                   </p>
                 ) : (
-                  <Button
-                    className="mt-2 bg-blue-600 hover:bg-blue-700"
-                    onClick={() => handleBorrow(book)}
-                  >
-                    Request Book
-                  </Button>
+                  <div className="flex justify-center">
+                    <Button
+                      className="mt-2 bg-blue-600 hover:bg-blue-700"
+                      onClick={() => handleBorrow(book)}
+                    >
+                      Request Book
+                    </Button>
+                  </div>
                 )}
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
 
@@ -166,5 +179,5 @@ export default function StudentLibraryCatalog() {
         )}
       </div>
     </div>
-  )
+  );
 }

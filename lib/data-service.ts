@@ -23,9 +23,15 @@ export const dataService = {
     }));
   },
 
-  async addBookToCatalog(bookData: { bookId: string; title: string; author: string }) {
-    return await addDoc(collection(db, "books"), bookData);
+  async addBookToCatalog(bookData: {
+    bookId: string;
+    title: string;
+    author: string;
+    imageUrl?: string; // opcional
+  }) {
+    return await addDoc(collection(db, "books"), bookData)
   },
+
   async updateBook(bookId: string, updatedData: { title: string; author: string }) {
     const bookRef = doc(db, "books", bookId)
     await updateDoc(bookRef, updatedData)

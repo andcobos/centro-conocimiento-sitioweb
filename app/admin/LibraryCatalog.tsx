@@ -73,15 +73,27 @@ export default function LibraryCatalog() {
           <Table className="mt-4">
             <TableHeader>
               <TableRow>
+                <TableHead>Image</TableHead>
                 <TableHead>Book ID</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead>Author</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
+
             <TableBody>
               {filteredBooks.map((book) => (
                 <TableRow key={book.id}>
+                  <TableCell>
+                    <img
+                      src={
+                        book.imageUrl ||
+                        "https://via.placeholder.com/80x100?text=No+Image"
+                      }
+                      alt={book.title}
+                      className="w-16 h-20 object-cover rounded"
+                    />
+                  </TableCell>
                   <TableCell>{book.bookId}</TableCell>
                   <TableCell>{book.title}</TableCell>
                   <TableCell>{book.author}</TableCell>

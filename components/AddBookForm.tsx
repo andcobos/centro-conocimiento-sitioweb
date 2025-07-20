@@ -13,6 +13,7 @@ export default function AddBookForm({ onBookAdded }: { onBookAdded: () => void }
   const [bookId, setBookId] = useState("")
   const [title, setTitle] = useState("")
   const [author, setAuthor] = useState("")
+  const [imageUrl, setImageUrl] = useState("")
 
   const handleAddBook = async () => {
     if (!title) {
@@ -20,13 +21,15 @@ export default function AddBookForm({ onBookAdded }: { onBookAdded: () => void }
       return
     }
 
-    const newBook = { bookId, title, author }
+    const newBook = { bookId, title, author, imageUrl }  // ✅ Incluye imageUrl
+
     await dataService.addBookToCatalog(newBook)
     onBookAdded()
     setIsDialogOpen(false)
     setBookId("")
     setTitle("")
     setAuthor("")
+    setImageUrl("")
   }
 
   return (
@@ -65,6 +68,14 @@ export default function AddBookForm({ onBookAdded }: { onBookAdded: () => void }
               placeholder="Enter author name"
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label>Image URL</Label>
+            <Input
+              placeholder="Paste image link (https://...)"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
             />
           </div>
           <div className="flex justify-end space-x-2">
