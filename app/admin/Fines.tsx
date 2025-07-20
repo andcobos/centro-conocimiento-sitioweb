@@ -67,8 +67,8 @@ export default function Fines() {
     await dataService.addFine(newFine);
 
     await dataService.logActivity(
-      "Add Fine",
-      "Admin", // O usa un ID dinámico del usuario autenticado si tienes
+      "Fine Added",
+      newFine.studentId, // ✅ Carnet del estudiante
       `Added fine of $${newFine.amount} to student ${newFine.studentId} for "${newFine.reason}".`
     );
 

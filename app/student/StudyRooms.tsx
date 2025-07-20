@@ -11,9 +11,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Clock, Users } from "lucide-react";
+import { MapPin, Clock, Users, XCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { AlertTitle } from "@/components/ui/alert";
 import { dataService } from "@/lib/data-service";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -52,7 +52,17 @@ export function StudyRoomSection({ studyRooms }: { studyRooms: any[] }) {
     setIsDialogOpen(false);
   };
 
-  // ✅ IMPORTANTE: Controlar carga y autenticación correctamente
+  const handleReleaseRoom = async () => {
+    if (!studentRequest) return;
+    await dataService.releaseStudyRoom(studentRequest.id);
+    await loadStudentRequest();
+  };
+
+  const isRoomExpired = (room: any) => {
+    if (!room.occupiedUntil) return false;
+    return new Date(room.occupiedUntil) < new Date();
+  };
+
   if (loading) {
     return <p className="text-center py-4">Loading...</p>;
   }
@@ -67,7 +77,6 @@ export function StudyRoomSection({ studyRooms }: { studyRooms: any[] }) {
 
   return (
     <div className="space-y-6">
-      {/* Botón para solicitar sala */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Study Rooms</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -97,20 +106,29 @@ export function StudyRoomSection({ studyRooms }: { studyRooms: any[] }) {
       {/* Estado actual de la solicitud */}
       {studentRequest ? (
         <Alert>
-          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle className="h-4 w-4" />
           <AlertDescription>
             {studentRequest.status === "Pending"
-              ? `Your room request is pending approval for room ${
-                  studentRequest.roomName || studentRequest.id
-                }.`
-              : `You currently have assigned room ${
-                  studentRequest.roomName || studentRequest.id
-                }.`}
+              ? `Your room request is pending approval for room ${studentRequest.roomName || studentRequest.id}.`
+              : `You currently have assigned room ${studentRequest.roomName || studentRequest.id}.`}
           </AlertDescription>
+
+          {studentRequest.status === "Occupied" && (
+            <div className="mt-4 flex justify-end">
+              <Button
+                variant="destructive"
+                onClick={handleReleaseRoom}
+                className="flex items-center"
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                Release Room
+              </Button>
+            </div>
+          )}
         </Alert>
       ) : (
         <Alert>
-          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle className="h-4 w-4" />
           <AlertDescription>
             You have no active or assigned room.
           </AlertDescription>
@@ -119,38 +137,44 @@ export function StudyRoomSection({ studyRooms }: { studyRooms: any[] }) {
 
       {/* Renderizado de las salas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {studyRooms.map((room) => (
-          <Card key={room.id}>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                {room.name}
-                <span
-                  className={
-                    room.status === "Available"
-                      ? "text-green-600 font-bold"
-                      : "text-gray-600"
-                  }
-                >
-                  {room.status}
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {room.status === "Occupied" && room.occupiedUntil && (
-                <div className="flex items-center text-sm text-gray-600">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Occupied until {room.occupiedUntil}
-                </div>
-              )}
-              {room.status === "Available" && (
-                <div className="flex items-center text-sm text-green-600">
-                  <Users className="h-4 w-4 mr-2" />
-                  Ready for use
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+        {studyRooms.map((room) => {
+          const expired = isRoomExpired(room);
+
+          return (
+            <Card key={room.id}>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  {room.name}
+                  <span
+                    className={
+                      expired
+                        ? "text-red-600 font-bold"
+                        : room.status === "Available"
+                        ? "text-green-600 font-bold"
+                        : "text-gray-600"
+                    }
+                  >
+                    {expired ? "Room Expired" : room.status}
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {room.status === "Occupied" && room.occupiedUntil && (
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Clock className="h-4 w-4 mr-2" />
+                    Occupied until {room.occupiedUntil}
+                  </div>
+                )}
+                {room.status === "Available" && (
+                  <div className="flex items-center text-sm text-green-600">
+                    <Users className="h-4 w-4 mr-2" />
+                    Ready for use
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

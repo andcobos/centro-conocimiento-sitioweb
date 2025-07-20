@@ -4,6 +4,7 @@ import { db } from "./firebase";
 const USE_MOCK_DATA = false;
 
 export type BookLoan = {
+  title: any;
   id: string
   bookId: string
   studentId: string
@@ -175,6 +176,14 @@ export const dataService = {
     }))
   },
 
+  async releaseStudyRoom(roomId: string) {
+    const roomRef = doc(db, "study_rooms", roomId);
+    await updateDoc(roomRef, {
+      status: "Available",
+      occupiedBy: null,
+      occupiedUntil: null,
+    });
+  },
 
   async getStudentRoomRequest(studentId: string) {
     const snapshot = await getDocs(query(
@@ -270,10 +279,11 @@ export const dataService = {
     const timestamp = new Date().toISOString();
     await addDoc(collection(db, "activity_logs"), {
       action,
-      user,
+      user,   
       details,
       timestamp,
     });
   }
+
 
 };

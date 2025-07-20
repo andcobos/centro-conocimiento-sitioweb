@@ -41,14 +41,23 @@ export default function StudyRooms() {
 
   const handleApproveRequest = async (room: StudyRoom) => {
     if (!dueDate[room.id]) {
-      alert("Please enter an end date.");
-      return;
+      alert("Please enter an end date.")
+      return
     }
+
     await dataService.approveStudyRoomRequest(
       room.id,
       room.requestedBy!,
       dueDate[room.id]
     )
+
+    // ✅ Registrar en Activity Logs usando requestedBy como "usuario"
+    await dataService.logActivity(
+      "Study Room Approved",
+      room.requestedBy!,
+      `Approved study room "${room.name}" until ${dueDate[room.id]}.`
+    )
+
     await loadRooms()
   }
 
@@ -64,7 +73,12 @@ export default function StudyRooms() {
 
   const handleAddRoom = async () => {
     if (!newRoomName.trim()) return
-    await dataService.addStudyRoom({ name: newRoomName, status: "Available", occupiedBy: null, occupiedUntil: null })
+    await dataService.addStudyRoom({
+      name: newRoomName,
+      status: "Available",
+      occupiedBy: null,
+      occupiedUntil: null
+    })
     setNewRoomName("")
     await loadRooms()
   }
@@ -86,7 +100,7 @@ export default function StudyRooms() {
         </Button>
       </div>
 
-      {/* Pending Requests Section */}
+      {/* Pending Requests */}
       <div className="space-y-4">
         <h3 className="text-xl font-semibold">Pending Requests</h3>
         {studyRooms.filter(room => room.requestedBy).length > 0 ? (
@@ -102,7 +116,6 @@ export default function StudyRooms() {
                 <p><strong>Requested By:</strong> {room.requestedBy}</p>
                 <Input
                   type="datetime-local"
-                  placeholder="Set end time"
                   value={dueDate[room.id] || ""}
                   onChange={(e) => handleSetDueDate(room.id, e.target.value)}
                 />
@@ -120,10 +133,10 @@ export default function StudyRooms() {
         )}
       </div>
 
-      {/* All Rooms Section */}
+      {/* All Rooms */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {studyRooms.map((room) => (
-          <Card key={room.id} className="flex flex-col justify-between">
+          <Card key={room.id}>
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
                 {room.name}

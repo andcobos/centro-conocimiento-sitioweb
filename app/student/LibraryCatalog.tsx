@@ -4,8 +4,6 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertTriangle } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { dataService } from "@/lib/data-service"
 
@@ -16,13 +14,9 @@ export default function StudentLibraryCatalog() {
   const [books, setBooks] = useState<any[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [requests, setRequests] = useState<any[]>([])
-  const [loanHistory, setLoanHistory] = useState<any[]>([])
 
   useEffect(() => {
-    if (studentId) {
-      loadRequests()
-      loadLoanHistory()
-    }
+    if (studentId) loadRequests()
     loadBooks()
   }, [studentId])
 
@@ -41,7 +35,6 @@ export default function StudentLibraryCatalog() {
     })
 
     await loadRequests()
-    await loadLoanHistory()
     alert(`You have requested: ${book.title}`)
   }
 
@@ -56,24 +49,14 @@ export default function StudentLibraryCatalog() {
     setRequests(studentRequests)
   }
 
-  const loadLoanHistory = async () => {
-    if (!studentId) return
-    const history = await dataService.getLoanHistory(studentId)
-    setLoanHistory(history)
-  }
+  const activeRequests = requests.filter(
+    (loan) => loan.status === "Pending" || loan.status === "On Time"
+  )
 
   const filteredBooks = books.filter(
     (book) =>
       book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       book.author.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
-  const activeRequests = requests.filter(
-    (loan) => loan.status === "Pending" || loan.status === "On Time"
-  )
-
-  const pastLoans = loanHistory.filter(
-    (loan) => loan.status !== "Pending" && loan.status !== "On Time"
   )
 
   if (loading) return <p>Loading...</p>
@@ -94,7 +77,7 @@ export default function StudentLibraryCatalog() {
         {filteredBooks.map((book) => {
           const existingRequest = activeRequests.find(
             (loan) => loan.bookId === book.bookId
-          );
+          )
 
           return (
             <Card key={book.id}>
@@ -132,52 +115,9 @@ export default function StudentLibraryCatalog() {
                 )}
               </CardContent>
             </Card>
-          );
+          )
         })}
       </div>
-
-      {/* ✅ My Active Book Requests */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-gray-800 mt-8">
-          My Active Book Requests
-        </h3>
-
-        {activeRequests.length === 0 ? (
-          <p className="text-gray-500">You have no active book requests.</p>
-        ) : (
-          activeRequests.map((loan) => (
-            <Alert key={loan.id}>
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                {loan.title} —{" "}
-                {loan.status === "Pending"
-                  ? "Request Pending Approval"
-                  : `Borrowed, due on ${loan.dueDate || "N/A"}`}
-              </AlertDescription>
-            </Alert>
-          ))
-        )}
-      </div>
-
-      {/* ✅ Loan History */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-gray-800 mt-8">
-          My Loan History
-        </h3>
-
-        {pastLoans.length === 0 ? (
-          <p className="text-gray-500">You have no previous loans.</p>
-        ) : (
-          pastLoans.map((loan) => (
-            <Alert key={loan.id}>
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                {loan.title} — Status: {loan.status}
-              </AlertDescription>
-            </Alert>
-          ))
-        )}
-      </div>
     </div>
-  );
+  )
 }

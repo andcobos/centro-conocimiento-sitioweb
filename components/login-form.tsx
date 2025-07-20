@@ -110,7 +110,7 @@ export function LoginForm() {
 
           <Button
             type="submit"
-            className="w-full bg-blue-800 hover:bg-blue-700"
+            className="w-full bg-blue-800 hover:bg-blue-900"
           >
             Sign In
           </Button>

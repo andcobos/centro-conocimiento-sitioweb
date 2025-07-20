@@ -11,7 +11,7 @@ import { useEffect } from "react"
 export function AboutPage() {
   useEffect(() => {
     const bgDiv = document.querySelector(".custom-cursor-bg") as HTMLElement | null;
-    if (!bgDiv) return; // 🔐 Seguridad
+    if (!bgDiv) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       const { left, top } = bgDiv.getBoundingClientRect();
@@ -49,7 +49,7 @@ export function AboutPage() {
             </div>
             <div className="flex items-center">
               <Link href="/login">
-                <Button variant="ghost">Sign In</Button>
+                <Button variant="ghost" className="bg-blue-700 hover:bg-blue-900">Sign In</Button>
               </Link>
             </div>
           </div>

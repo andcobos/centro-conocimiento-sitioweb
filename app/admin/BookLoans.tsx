@@ -4,10 +4,9 @@ import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar" // Asegúrate de tener un componente Calendar
+import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { BookLoan, dataService } from "@/lib/data-service"
-
 
 export default function BookLoans() {
   const [bookLoans, setBookLoans] = useState<BookLoan[]>([])
@@ -17,7 +16,6 @@ export default function BookLoans() {
   const loadBookLoans = async () => {
     const loansData = await dataService.getBookLoans()
 
-    // Actualiza automáticamente el estado a "Expired" si la fecha ya pasó
     const today = new Date()
     for (const loan of loansData) {
       if (loan.status === "On Time" && loan.dueDate) {
@@ -43,8 +41,20 @@ export default function BookLoans() {
   const handleSetDueDate = async () => {
     if (selectedLoanId && selectedDate) {
       const dueDateStr = format(selectedDate, "yyyy-MM-dd")
+
+      const loan = bookLoans.find(loan => loan.id === selectedLoanId)
+      if (!loan) return
+
       await dataService.setLoanDueDate(selectedLoanId, dueDateStr)
       await dataService.updateLoanStatus(selectedLoanId, "On Time")
+
+      // ✅ Registrar en Activity Logs
+      await dataService.logActivity(
+        "Book Loan Approved",
+        loan.studentId,  // ID real del estudiante relacionado
+        `Book loan approved for ${loan.title} (Book ID: ${loan.bookId}). Due date: ${dueDateStr}`
+      )
+
       setSelectedLoanId(null)
       setSelectedDate(undefined)
       await loadBookLoans()
@@ -53,6 +63,16 @@ export default function BookLoans() {
 
   const handleUpdateLoanStatus = async (loanId: string, status: string) => {
     await dataService.updateLoanStatus(loanId, status)
+
+    const loan = bookLoans.find(loan => loan.id === loanId)
+    if (loan) {
+      await dataService.logActivity(
+        `Book Loan Marked ${status}`,
+        loan.studentId,
+        `Book loan for ${loan.title} (Book ID: ${loan.bookId}) marked as ${status}.`
+      )
+    }
+
     await loadBookLoans()
   }
 

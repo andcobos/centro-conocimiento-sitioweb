@@ -10,6 +10,7 @@ import { FinesSection } from "./FinesSection"
 import Image from "next/image"
 import { useAuth } from "@/contexts/auth-context"
 import StudentLibraryCatalog from "./LibraryCatalog"
+import LoansAndRequests from "./LoansAndRequests"
 
 type StudyRoom = {
   id: string
@@ -145,10 +146,11 @@ export function StudentDashboard() {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Tabs defaultValue="rooms" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="rooms">Study Rooms</TabsTrigger>
             <TabsTrigger value="books">Books</TabsTrigger>
             <TabsTrigger value="fines">Fines</TabsTrigger>
+            <TabsTrigger value="loansandrequests">Loans & Requests</TabsTrigger>
           </TabsList>
 
           <TabsContent value="rooms">
@@ -156,12 +158,15 @@ export function StudentDashboard() {
           </TabsContent>
 
           <TabsContent value="books">
-            {/* 📚 Catálogo de libros */}
             <StudentLibraryCatalog />
           </TabsContent>
 
           <TabsContent value="fines">
             <FinesSection fines={fines} />
+          </TabsContent>
+
+          <TabsContent value="loansandrequests">
+            <LoansAndRequests/>
           </TabsContent>
         </Tabs>
       </div>

@@ -47,7 +47,7 @@ export default function Students() {
     const studentData = {
       id: formId,
       name: formName,
-      email: `${formId}@university.edu`,
+      email: `${formId}@esen.edu.sv`,
       status: "Active",
     }
 

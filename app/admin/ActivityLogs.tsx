@@ -28,8 +28,7 @@ export default function ActivityLogs() {
       (userFilter
         ? log.user.toLowerCase().includes(userFilter.toLowerCase())
         : true)
-  );
-
+  )
 
   return (
     <div className="space-y-6">
@@ -47,12 +46,12 @@ export default function ActivityLogs() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {/* Resumen + Filtros */}
+          {/* Summary & Filters */}
           <div className="flex justify-between items-center flex-wrap gap-4">
             <p>Total Records: {filteredLogs.length}</p>
 
             <Input
-              placeholder="Search by user ID..."
+              placeholder="Search by student ID..."
               value={userFilter}
               onChange={(e) => setUserFilter(e.target.value)}
               className="w-52"
@@ -63,25 +62,21 @@ export default function ActivityLogs() {
                 <SelectValue placeholder="Filter by action..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Actions</SelectItem>{" "}
-                {/* ✅ Ya no es "" */}
-                <SelectItem value="Book Loan Created">
-                  Book Loan Created
-                </SelectItem>
+                <SelectItem value="all">All Actions</SelectItem>
+                <SelectItem value="Book Loan Created">Book Loan Created</SelectItem>
                 <SelectItem value="Fine Added">Fine Added</SelectItem>
-                <SelectItem value="Room Requested">Room Requested</SelectItem>
-                <SelectItem value="Login">Login</SelectItem>
+                <SelectItem value="Study Room Loan">Study Room Loan</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* Tabla */}
+          {/* Table */}
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Timestamp</TableHead>
                 <TableHead>Action</TableHead>
-                <TableHead>User</TableHead>
+                <TableHead>Student ID</TableHead>
                 <TableHead>Details</TableHead>
               </TableRow>
             </TableHeader>
@@ -90,11 +85,13 @@ export default function ActivityLogs() {
                 <TableRow key={log.id}>
                   <TableCell>{log.timestamp}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant={
-                        log.action.includes("Fine") ? "destructive" : "default"
-                      }
-                    >
+                    <Badge variant={
+                      log.action.includes("Fine")
+                        ? "destructive"
+                        : log.action.includes("Book")
+                        ? "default"
+                        : "secondary"
+                    }>
                       {log.action}
                     </Badge>
                   </TableCell>
@@ -113,5 +110,5 @@ export default function ActivityLogs() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
