@@ -92,3 +92,24 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.custom-cursor-bg {
+  background: radial-gradient(
+      circle at var(--x, 50%) var(--y, 50%),
+      rgba(255, 255, 255, 0.1),
+      transparent 20%
+    ),
+    linear-gradient(to right, #13488c, #154583);
+  transition: background 0.1s;
+}
+
+.custom-cursor-bg:hover {
+  cursor: none;
+}
+
+.custom-cursor-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}

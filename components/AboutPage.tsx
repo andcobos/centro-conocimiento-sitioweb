@@ -5,9 +5,30 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BookOpen, Clock, Users, Wifi, Coffee, Phone, Mail, MapPin } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { useEffect } from "react"
 
 
 export function AboutPage() {
+  useEffect(() => {
+    const bgDiv = document.querySelector(".custom-cursor-bg") as HTMLElement | null;
+    if (!bgDiv) return; // 🔐 Seguridad
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const { left, top } = bgDiv.getBoundingClientRect();
+      const x = e.clientX - left;
+      const y = e.clientY - top;
+
+      bgDiv.style.setProperty("--x", `${x}px`);
+      bgDiv.style.setProperty("--y", `${y}px`);
+    };
+
+    bgDiv.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      bgDiv.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
@@ -36,7 +57,7 @@ export function AboutPage() {
       </nav>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-800 to-indigo-700 text-white animate-fade-in-up">
+      <div className="bg-gradient-to-r from-blue-800 to-indigo-700 text-white relative overflow-hidden custom-cursor-bg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-4xl font-bold mb-4">
@@ -82,7 +103,7 @@ export function AboutPage() {
             <img
               src="/esencampus.jpg?height=400&width=500"
               alt="Knowledge Center Interior"
-              className="rounded-lg shadow-lg"
+              className="rounded-lg shadow-lg transition-transform transform hover:scale-105 duration-200 ease-in-out"
             />
           </div>
         </div>
@@ -93,7 +114,7 @@ export function AboutPage() {
             Our Services
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="text-center transition-transform transform hover:scale-105 hover:shadow-xl duration-300 ease-in-out">
+            <Card className="text-center transition-transform transform hover:scale-105 hover:shadow-xl duration-200 ease-in-out">
               <CardHeader>
                 <BookOpen className="h-12 w-12 text-blue-600 mx-auto mb-4" />
                 <CardTitle>Library Resources</CardTitle>
@@ -106,7 +127,7 @@ export function AboutPage() {
               </CardContent>
             </Card>
 
-            <Card className="text-center">
+            <Card className="text-center transition-transform transform hover:scale-105 hover:shadow-xl duration-200 ease-in-out">
               <CardHeader>
                 <Users className="h-12 w-12 text-blue-600 mx-auto mb-4" />
                 <CardTitle>Study Rooms</CardTitle>
@@ -119,7 +140,7 @@ export function AboutPage() {
               </CardContent>
             </Card>
 
-            <Card className="text-center">
+            <Card className="text-center transition-transform transform hover:scale-105 hover:shadow-xl duration-200 ease-in-out">
               <CardHeader>
                 <Wifi className="h-12 w-12 text-blue-600 mx-auto mb-4" />
                 <CardTitle>Digital Access</CardTitle>
