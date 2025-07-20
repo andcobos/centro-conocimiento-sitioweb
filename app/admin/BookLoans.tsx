@@ -12,7 +12,7 @@ import { BookLoan, dataService } from "@/lib/data-service"
 export default function BookLoans() {
   const [bookLoans, setBookLoans] = useState<BookLoan[]>([])
   const [selectedLoanId, setSelectedLoanId] = useState<string | null>(null)
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
 
   const loadBookLoans = async () => {
     const loansData = await dataService.getBookLoans()
@@ -46,7 +46,7 @@ export default function BookLoans() {
       await dataService.setLoanDueDate(selectedLoanId, dueDateStr)
       await dataService.updateLoanStatus(selectedLoanId, "On Time")
       setSelectedLoanId(null)
-      setSelectedDate(null)
+      setSelectedDate(undefined)
       await loadBookLoans()
     }
   }

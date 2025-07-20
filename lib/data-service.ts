@@ -26,6 +26,14 @@ export const dataService = {
   async addBookToCatalog(bookData: { bookId: string; title: string; author: string }) {
     return await addDoc(collection(db, "books"), bookData);
   },
+  async updateBook(bookId: string, updatedData: { title: string; author: string }) {
+    const bookRef = doc(db, "books", bookId)
+    await updateDoc(bookRef, updatedData)
+  },
+  async deleteBook(bookId: string) {
+    const bookRef = doc(db, "books", bookId)
+    await deleteDoc(bookRef)
+  },
 
   // 📖 BOOK LOANS
   async getBookLoans(): Promise<BookLoan[]> {
@@ -236,10 +244,30 @@ export const dataService = {
     await updateDoc(fineRef, { status: "Paid" });
   },
 
+  async addFine(fineData: {
+    studentId: string
+    reason: string
+    amount: string
+    date: string
+    status: string
+  }) {
+    return await addDoc(collection(db, "fines"), fineData)
+  },
+
   // 📝 ACTIVITY LOGS
   async getActivityLogs() {
     const snapshot = await getDocs(collection(db, "activity_logs"));
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   },
+
+  async logActivity(action: string, user: string, details: string) {
+    const timestamp = new Date().toISOString();
+    await addDoc(collection(db, "activity_logs"), {
+      action,
+      user,
+      details,
+      timestamp,
+    });
+  }
 
 };

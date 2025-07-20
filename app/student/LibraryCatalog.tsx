@@ -16,10 +16,12 @@ export default function StudentLibraryCatalog() {
   const [books, setBooks] = useState<any[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [requests, setRequests] = useState<any[]>([])
+  const [loanHistory, setLoanHistory] = useState<any[]>([])
 
   useEffect(() => {
     if (studentId) {
       loadRequests()
+      loadLoanHistory()
     }
     loadBooks()
   }, [studentId])
@@ -39,6 +41,7 @@ export default function StudentLibraryCatalog() {
     })
 
     await loadRequests()
+    await loadLoanHistory()
     alert(`You have requested: ${book.title}`)
   }
 
@@ -53,10 +56,24 @@ export default function StudentLibraryCatalog() {
     setRequests(studentRequests)
   }
 
+  const loadLoanHistory = async () => {
+    if (!studentId) return
+    const history = await dataService.getLoanHistory(studentId)
+    setLoanHistory(history)
+  }
+
   const filteredBooks = books.filter(
     (book) =>
       book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       book.author.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const activeRequests = requests.filter(
+    (loan) => loan.status === "Pending" || loan.status === "On Time"
+  )
+
+  const pastLoans = loanHistory.filter(
+    (loan) => loan.status !== "Pending" && loan.status !== "On Time"
   )
 
   if (loading) return <p>Loading...</p>
@@ -75,10 +92,8 @@ export default function StudentLibraryCatalog() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredBooks.map((book) => {
-          const existingRequest = requests.find(
-            (loan) =>
-              loan.bookId === book.bookId &&
-              (loan.status === "Pending" || loan.status === "On Time")
+          const existingRequest = activeRequests.find(
+            (loan) => loan.bookId === book.bookId
           )
 
           return (
@@ -108,16 +123,16 @@ export default function StudentLibraryCatalog() {
         })}
       </div>
 
-      {/* Sección de solicitudes pendientes / activas */}
+      {/* ✅ My Active Book Requests */}
       <div className="space-y-4">
         <h3 className="text-xl font-semibold text-gray-800 mt-8">
-          My Book Requests
+          My Active Book Requests
         </h3>
 
-        {requests.length === 0 ? (
-          <p className="text-gray-500">You have no book requests.</p>
+        {activeRequests.length === 0 ? (
+          <p className="text-gray-500">You have no active book requests.</p>
         ) : (
-          requests.map((loan) => (
+          activeRequests.map((loan) => (
             <Alert key={loan.id}>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
@@ -125,6 +140,26 @@ export default function StudentLibraryCatalog() {
                 {loan.status === "Pending"
                   ? "Request Pending Approval"
                   : `Borrowed, due on ${loan.dueDate || "N/A"}`}
+              </AlertDescription>
+            </Alert>
+          ))
+        )}
+      </div>
+
+      {/* ✅ Loan History */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-gray-800 mt-8">
+          My Loan History
+        </h3>
+
+        {pastLoans.length === 0 ? (
+          <p className="text-gray-500">You have no previous loans.</p>
+        ) : (
+          pastLoans.map((loan) => (
+            <Alert key={loan.id}>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                {loan.title} — Status: {loan.status}
               </AlertDescription>
             </Alert>
           ))
