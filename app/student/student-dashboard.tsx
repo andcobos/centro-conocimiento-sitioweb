@@ -7,10 +7,12 @@ import { LogOut } from "lucide-react"
 import { dataService } from "@/lib/data-service"
 import { StudyRoomSection } from "./StudyRooms"
 import { FinesSection } from "./FinesSection"
+
 import Image from "next/image"
 import { useAuth } from "@/contexts/auth-context"
 import StudentLibraryCatalog from "./LibraryCatalog"
 import LoansAndRequests from "./LoansAndRequests"
+import StudentHeroPage from "./HeroPage"
 
 type StudyRoom = {
   id: string
@@ -120,56 +122,74 @@ export function StudentDashboard() {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
+          <div className="flex flex-wrap items-center justify-between h-16">
+            
+            {/* Logo + Title */}
+            <div className="flex items-center space-x-3 mb-2 sm:mb-0">
               <Image
                 src="/esenlogo.png"
                 alt="ESEN Logo"
                 width={32}
                 height={32}
-                className="mr-3 rounded"
+                className="rounded"
               />
-              <h1 className="text-xl font-semibold text-gray-900">
-                Centro de Conocimiento ESEN - STUDENT
+              <h1 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 leading-tight">
+                CC ESEN - STUDENT
               </h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">Welcome, {user?.id}</span>
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
+
+            {/* User + Logout */}
+            <div className="flex items-center space-x-3 text-sm sm:text-base">
+              <span className="hidden sm:inline text-gray-600">
+                Welcome, {user?.id}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="text-blue-700 border border-blue-700 hover:bg-blue-100"
+              >
+                <LogOut className="h-4 w-4 mr-1" />
                 Logout
               </Button>
             </div>
+
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <Tabs defaultValue="rooms" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="rooms">Study Rooms</TabsTrigger>
-            <TabsTrigger value="books">Books</TabsTrigger>
-            <TabsTrigger value="fines">Fines</TabsTrigger>
-            <TabsTrigger value="loansandrequests">Loans & Requests</TabsTrigger>
-          </TabsList>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Tabs defaultValue="rooms" className="space-y-6">
+            <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-5 w-full gap-2">
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="rooms">Study Rooms</TabsTrigger>
+              <TabsTrigger value="books">Books</TabsTrigger>
+              <TabsTrigger value="fines">Fines</TabsTrigger>
+              <TabsTrigger value="loansandrequests">Loans & Requests</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="rooms">
-            <StudyRoomSection studyRooms={studyRooms} />
-          </TabsContent>
+            <TabsContent value="general">
+              <StudentHeroPage/>
+            </TabsContent>
 
-          <TabsContent value="books">
-            <StudentLibraryCatalog />
-          </TabsContent>
+            <TabsContent value="rooms">
+              <StudyRoomSection studyRooms={studyRooms} />
+            </TabsContent>
 
-          <TabsContent value="fines">
-            <FinesSection fines={fines} />
-          </TabsContent>
+            <TabsContent value="books">
+              <StudentLibraryCatalog />
+            </TabsContent>
 
-          <TabsContent value="loansandrequests">
-            <LoansAndRequests/>
-          </TabsContent>
-        </Tabs>
-      </div>
+            <TabsContent value="fines">
+              <FinesSection fines={fines} />
+            </TabsContent>
+
+            <TabsContent value="loansandrequests">
+              <LoansAndRequests/>
+            </TabsContent>
+          </Tabs>
+        </div>
+        
     </div>
   );
 }
