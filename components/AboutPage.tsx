@@ -49,7 +49,7 @@ export function AboutPage() {
             </div>
             <div className="flex items-center">
               <Link href="/login">
-                <Button variant="ghost" className="bg-blue-700 hover:bg-blue-900">Sign In</Button>
+                <Button variant="ghost" className="bg-blue-600 hover:bg-blue-700">Sign In</Button>
               </Link>
             </div>
           </div>
@@ -111,7 +111,7 @@ export function AboutPage() {
         {/* Services Section */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-            Our Services
+            Services
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <Card className="text-center transition-transform transform hover:scale-105 hover:shadow-xl duration-200 ease-in-out">
@@ -157,7 +157,7 @@ export function AboutPage() {
 
         {/* Hours and Contact */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card>
+          <Card className="text-center transition-transform transform hover:scale-105 hover:shadow-xl duration-200 ease-in-out">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Clock className="h-5 w-5 mr-2" />
@@ -166,25 +166,21 @@ export function AboutPage() {
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex justify-between">
-                <span>Monday - Thursday:</span>
-                <span>7:00 AM - 11:00 PM</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Friday:</span>
+                <span>Monday - Friday:</span>
                 <span>7:00 AM - 8:00 PM</span>
               </div>
               <div className="flex justify-between">
                 <span>Saturday:</span>
-                <span>9:00 AM - 6:00 PM</span>
+                <span>8:00 AM - 12:30 PM</span>
               </div>
               <div className="flex justify-between">
                 <span>Sunday:</span>
-                <span>12:00 PM - 10:00 PM</span>
+                <span>Closed</span>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="text-left transition-transform transform hover:scale-105 hover:shadow-xl duration-200 ease-in-out">
             <CardHeader>
               <CardTitle>Contact Information</CardTitle>
               <CardDescription>
@@ -194,15 +190,15 @@ export function AboutPage() {
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-blue-600" />
-                <span>(555) 123-4567</span>
+                <span>(503) 2234 9243</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-blue-600" />
-                <span>help@university-kc.edu</span>
+                <span>ccesen.information@esen.edu</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="h-5 w-5 text-blue-600" />
-                <span>Building A, Floor 2, University Campus</span>
+                <span>Centro de Conocimiento ESEN.</span>
               </div>
             </CardContent>
           </Card>
